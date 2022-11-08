@@ -3,6 +3,17 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 import time
 from urllib import request
+import shutil
+
+#move files
+src = 'C:\Users\sangm\Desktop\selenium\selenium'
+dir = 'C:\Users\sangm\Desktop\selenium\selenium\selenium picture'
+        
+
+
+#search settings
+searchword=input("검색어를 입력하세요: ")
+wordtemp=int(input("몇 개? "))
 
 #web settings
 options = webdriver.ChromeOptions()
@@ -16,13 +27,13 @@ driver.get("https://www.google.co.kr/imghp?hl=ko&tab=ri&ogbl")
 
 #search words
 elem = driver.find_element("name", "q")
-elem.send_keys('조코딩')
+elem.send_keys(searchword)
 elem.submit()
 
 imgs=driver.find_elements(By.CSS_SELECTOR,".rg_i.Q4LuWd")
 
-#scroll
-SCROLL_PAUSE_TIME = 0.5
+#scroll down
+SCROLL_PAUSE_TIME =5
 
         # Get scroll height
 last_height = driver.execute_script("return document.body.scrollHeight")
@@ -37,17 +48,26 @@ while True:
     # Calculate new scroll height and compare with last scroll height
     new_height = driver.execute_script("return document.body.scrollHeight")
     if new_height == last_height:
-        break
+        try:
+            driver.find_element(By.CSS_SELECTOR,".mye4qd").click()
+        except:
+            break
     last_height = new_height
 
 #images download
-for i in range(10):
-    imgs[i].click()
-    time.sleep(1)
-    img=(driver.find_element(By.CSS_SELECTOR,".n3VNCb.KAlRDb").get_attribute("src"))
-    request.urlretrieve(img, str(i)+".jpg")
+for i in range(wordtemp):
+    #실패하면 일단 넘어감.
+    try:
+        imgs[i].click()
+        time.sleep(1)
+        img=(driver.find_element(By.CSS_SELECTOR,".n3VNCb.KAlRDb").get_attribute("src"))
+        request.urlretrieve(img, str(i)+".jpg")
+        filename = str(i)+'.jpg'
+        shutil.move(src + filename, dir + filename) #fuction moving files
+    except:
+        pass
 
-
+driver.close()
  
 # assert "Python" in driver.title
 # elem = driver.find_element(By.NAME, "q")
